@@ -16,6 +16,8 @@ class _PriceViewState extends State<PriceView> {
 
   @override
   void initState() {
+    _txtConNoRefri.text = '1.20';
+    _txtConNoRefri.text = '1.25';
     if(UserSimplePreferences.getGananciasNoRefri().toString() != 'null') {
       _txtConNoRefri.text = UserSimplePreferences.getGananciasNoRefri().toString();
     }
@@ -71,6 +73,11 @@ class _PriceViewState extends State<PriceView> {
             MaterialButton(
               onPressed: () async {
                 try{
+                if(_txtConRefri.text == '' || _txtConNoRefri.text == ''){
+                  return;
+                }
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(const SnackBar(content: Text("Se ha guardado correctamente.")));
                 await UserSimplePreferences.setGanancias(
                     double.parse(_txtConRefri.text),
                     double.parse(_txtConNoRefri.text));
@@ -84,6 +91,7 @@ class _PriceViewState extends State<PriceView> {
                     //   textColor: Colors.white,
                     //   fontSize: 16.0
                     // );
+                    
                 }catch(e){
                     // Fluttertoast.showToast(
                     //   msg: "ha ocurrido un error al guardar.",
@@ -95,6 +103,8 @@ class _PriceViewState extends State<PriceView> {
                     //   textColor: Colors.white,
                     //   fontSize: 16.0
                     // );
+                    ScaffoldMessenger.of(context)
+                    .showSnackBar(const SnackBar(content: Text("Ha ocurrido un error al guardar.")));
                 }
               },
               child: const Text('Guardar'),

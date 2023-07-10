@@ -124,6 +124,8 @@ class _MainPageState extends State<MainPage> {
                   //   textColor: Colors.white,
                   //   fontSize: 16.0
                   // );
+                  ScaffoldMessenger.of(context)
+                    .showSnackBar(const SnackBar(content: Text("Ingresa un numero.")));
                 }
               },
               color: Colors.lightBlue,
