@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pricecreator/price_view.dart';
+import 'package:pricecreator/utils/user_simple_preferences.dart';
 
 import 'menu_item.dart';
 import 'menu_items.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await UserSimplePreferences.init();
   runApp(const MyApp());
 }
 
@@ -63,85 +65,84 @@ class _MainPageState extends State<MainPage> {
           )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 350, horizontal: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            TextField(
-              controller: _textController,
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'(^\d*\.?\d*)'))
-              ],
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(), 
-                hintText: 'Precio de compra'
-              ),
+      body: Column(
+        // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          TextField(
+            controller: _textController,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'(^\d*\.?\d*)'))
+            ],
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(), 
+              hintText: 'Precio de compra'
             ),
-            FractionallySizedBox(
-              widthFactor: 1,
-              child: MaterialButton(
-                
-                onPressed: () 
-                {
-                  try {
-                    salePrice = getSalePrice();
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Es refrigerado?',
+                  style:  TextStyle(fontSize: 16.0),
+                ),
+                Switch(
+                  // This bool value toggles the switch.
+                  value: isRefriged,
+                  activeColor: Colors.red,
+                  onChanged: (bool value) {
+                    // This is called when the user toggles the switch.
                     setState(() {
-                      pricePrint = salePrice.toString();
+                      isRefriged = value;
                     });
-                  } catch (e) {
-                    Fluttertoast.showToast(
-                      msg: "ingresa un numero.",
-                      toastLength: Toast.LENGTH_LONG,
-                      gravity: ToastGravity.BOTTOM,
-                      webPosition: 'center',
-                      timeInSecForIosWeb: 3,
-                      backgroundColor: Colors.red,
-                      textColor: Colors.white,
-                      fontSize: 16.0
-                    );
-                  }
-                },
-                color: Colors.lightBlue,
-                child: const Text('Calcular', style: TextStyle(color: Colors.white)),
-              ),
+                  },
+                ),
+              ],
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Es refrigerado?',
-                    style:  TextStyle(fontSize: 16.0),
-                  ),
-                  Switch(
-                    // This bool value toggles the switch.
-                    value: isRefriged,
-                    activeColor: Colors.red,
-                    onChanged: (bool value) {
-                      // This is called when the user toggles the switch.
-                      setState(() {
-                        isRefriged = value;
-                      });
-                    },
-                  ),
-                ],
-              ),
+          ),
+          FractionallySizedBox(
+            widthFactor: 1,
+            child: MaterialButton(
+              
+              onPressed: () 
+              {
+                try {
+                  salePrice = getSalePrice();
+                  setState(() {
+                    pricePrint = salePrice.toString();
+                  });
+                } catch (e) {
+                  // Fluttertoast.showToast(
+                  //   msg: "ingresa un numero.",
+                  //   toastLength: Toast.LENGTH_LONG,
+                  //   gravity: ToastGravity.BOTTOM,
+                  //   webPosition: 'center',
+                  //   timeInSecForIosWeb: 3,
+                  //   backgroundColor: Colors.red,
+                  //   textColor: Colors.white,
+                  //   fontSize: 16.0
+                  // );
+                }
+              },
+              color: Colors.lightBlue,
+              child: const Text('Calcular', style: TextStyle(color: Colors.white)),
             ),
-            Text(pricePrint),
-          ],
-        ),
+          ),
+          Text(pricePrint),
+        ],
       )
     );
   }
   double getSalePrice() {
+    final gananciasRefri = UserSimplePreferences.getGananciasRefri() ?? 1.25;
+    final gananciasNoRefri = UserSimplePreferences.getGananciasNoRefri() ?? 1.20;
     final purchasePrice = double.parse(_textController.text);
     if(isRefriged) {
-      return purchasePrice * 1.25;
+      return purchasePrice * gananciasRefri;
     }
-    return purchasePrice * 1.20;
+    return purchasePrice * gananciasNoRefri;
   }
   
   onSelected(BuildContext context, MenuItem item) {
