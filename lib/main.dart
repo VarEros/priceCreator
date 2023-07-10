@@ -96,6 +96,7 @@ class _MainPageState extends State<MainPage> {
                     // This is called when the user toggles the switch.
                     setState(() {
                       isRefriged = value;
+                      setSalePrice();
                     });
                   },
                 ),
@@ -106,27 +107,9 @@ class _MainPageState extends State<MainPage> {
             widthFactor: 1,
             child: MaterialButton(
               
-              onPressed: () 
+              onPressed: ()
               {
-                try {
-                  salePrice = getSalePrice();
-                  setState(() {
-                    pricePrint = salePrice.toString();
-                  });
-                } catch (e) {
-                  // Fluttertoast.showToast(
-                  //   msg: "ingresa un numero.",
-                  //   toastLength: Toast.LENGTH_LONG,
-                  //   gravity: ToastGravity.BOTTOM,
-                  //   webPosition: 'center',
-                  //   timeInSecForIosWeb: 3,
-                  //   backgroundColor: Colors.red,
-                  //   textColor: Colors.white,
-                  //   fontSize: 16.0
-                  // );
-                  ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text("Ingresa un numero.")));
-                }
+                setSalePrice();
               },
               color: Colors.lightBlue,
               child: const Text('Calcular', style: TextStyle(color: Colors.white)),
@@ -138,13 +121,26 @@ class _MainPageState extends State<MainPage> {
     );
   }
   double getSalePrice() {
-    final gananciasRefri = UserSimplePreferences.getGananciasRefri() ?? 1.25;
-    final gananciasNoRefri = UserSimplePreferences.getGananciasNoRefri() ?? 1.20;
+    
     final purchasePrice = double.parse(_textController.text);
     if(isRefriged) {
+      final gananciasRefri = UserSimplePreferences.getGananciasRefri() ?? 1.25;
       return purchasePrice * gananciasRefri;
     }
+    final gananciasNoRefri = UserSimplePreferences.getGananciasNoRefri() ?? 1.20;
     return purchasePrice * gananciasNoRefri;
+  }
+
+  void setSalePrice() {
+    try {
+      salePrice = getSalePrice();
+      setState(() {
+        pricePrint = salePrice.toString();
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text("Ingresa un numero.")));
+    }
   }
   
   onSelected(BuildContext context, MenuItem item) {

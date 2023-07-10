@@ -16,8 +16,8 @@ class _PriceViewState extends State<PriceView> {
 
   @override
   void initState() {
-    _txtConNoRefri.text = '1.20';
-    _txtConNoRefri.text = '1.25';
+    _txtConNoRefri.text = '1.2';
+    _txtConRefri.text = '1.25';
     if(UserSimplePreferences.getGananciasNoRefri().toString() != 'null') {
       _txtConNoRefri.text = UserSimplePreferences.getGananciasNoRefri().toString();
     }
@@ -49,7 +49,7 @@ class _PriceViewState extends State<PriceView> {
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp(r'(^\d*\.?\d*)'))
                   ],
-                  decoration: const InputDecoration(hintText: 'Ej: 1.20'),
+                  decoration: const InputDecoration(hintText: 'Ej: 1.2'),
                 ),
               ],
             ),
